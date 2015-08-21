@@ -8,22 +8,23 @@ export default Ember.Component.extend({
 
   didInsertElement: function(){
     var context = this.get('element').getContext('2d');
-    var data = this.get('data');
     var type = Ember.String.classify(this.get('type'));
     var options = Ember.merge({}, this.get('options'));
 
-    var chart = new Chart(context)[type](data, options);
+    this.get('data').then((data) => {
+      var chart = new Chart(context)[type](data, options);
 
-    if (this.get('legend')) {
-      var legend = chart.generateLegend();
-      this.$().wrap("<div class='chart-parent'></div>");
-      this.$().parent().append(legend);
-    }
+      if (this.get('legend')) {
+        var legend = chart.generateLegend();
+        this.$().wrap("<div class='chart-parent'></div>");
+        this.$().parent().append(legend);
+      }
 
-    this.set('chart', chart);
-    this.addObserver('data', this, this.updateChart);
-    this.addObserver('data.[]', this, this.updateChart);
-    this.addObserver('options', this, this.updateChart);
+      this.set('chart', chart);
+      this.addObserver('data', this, this.updateChart);
+      this.addObserver('data.[]', this, this.updateChart);
+      this.addObserver('options', this, this.updateChart);
+    });
   },
 
   willDestroyElement: function(){
